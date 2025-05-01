@@ -6,7 +6,7 @@ const Topbar = () => {
   return (
     <AppBar
       position="static"
-      sx={{ bgcolor: "white", color: "black" }}
+      sx={{ bgcolor: "#def5fd", color: "black" }}
       elevation={1}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -14,9 +14,9 @@ const Topbar = () => {
           Admin Dashboard
         </Typography>
         <Box>
-          <IconButton color="inherit">
+          {/* <IconButton color="inherit">
             <DarkModeIcon />
-          </IconButton>
+          </IconButton> */}
           <IconButton color="inherit">
             <AccountCircle />
           </IconButton>

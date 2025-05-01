@@ -36,6 +36,16 @@ const Sidebar = () => {
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
+  const gradientButtonStyle = {
+    background: "linear-gradient(to right, #5db6be, #34609e)",
+    color: "#fff",
+    textTransform: "none",
+    borderRadius: 2,
+    px: 2,
+    "&:hover": {
+      background: "linear-gradient(to right, #3cbfa7, #15124d)",
+    },
+  };
 
   return (
     <>
@@ -60,7 +70,7 @@ const Sidebar = () => {
           [`& .MuiDrawer-paper`]: {
             width: 240,
             boxSizing: "border-box",
-            bgcolor: sidebarBg,
+            background: "linear-gradient(to top, #5db6be, #34609e)",
             color: textColor,
           },
         }}
@@ -72,7 +82,7 @@ const Sidebar = () => {
         <Box
           sx={{
             p: 2,
-            bgcolor: headerBg,
+            bgcolor: "headerBg",
             textAlign: "center",
             borderBottom: "1px solid #2d3748",
           }}

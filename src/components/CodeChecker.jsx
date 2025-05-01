@@ -100,7 +100,7 @@ const CodeChecker = () => {
         }}
       >
         <Typography variant="h4" fontWeight="bold" textAlign="center">
-          Code Prize Checker
+          Mega We Care
         </Typography>
 
         <TextField

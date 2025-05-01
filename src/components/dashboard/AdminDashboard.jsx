@@ -77,7 +77,6 @@ const AdminDashboard = () => {
         outletName: item.outletName,
         code: item.code.code,
         createdAt: new Date(item.createdAt).toLocaleString(),
-        updatedAt: new Date(item.updatedAt).toLocaleString(),
       }));
 
       setRecords(formatted);
@@ -96,6 +95,25 @@ const AdminDashboard = () => {
     XLSX.writeFile(wb, "filtered_records.xlsx");
   };
 
+  const gradientButtonStyle = {
+    background: "linear-gradient(to right, #5db6be, #34609e)",
+    color: "#fff",
+    textTransform: "none",
+    borderRadius: 2,
+    px: 2,
+    "&:hover": {
+      background: "linear-gradient(to right, #3cbfa7, #15124d)",
+    },
+  };
+
+  const textFieldStyle = {
+    backgroundColor: "#ffffff",
+    borderRadius: 2,
+    "& .MuiOutlinedInput-root": {
+      borderRadius: 2,
+    },
+  };
+
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "name", headerName: "Customer Name", flex: 1 },
@@ -103,21 +121,21 @@ const AdminDashboard = () => {
     { field: "outletName", headerName: "Outlet", flex: 1 },
     { field: "code", headerName: "Prize Code", flex: 1 },
     { field: "createdAt", headerName: "Created At", flex: 1 },
-    { field: "updatedAt", headerName: "Updated At", flex: 1 },
   ];
 
   useEffect(() => {
     fetchFilteredData();
   }, []);
+
   return (
-    <Box sx={{ bgcolor: "#f5f5f5", py: 3, minHeight: "100%" }}>
+    <Box sx={{ bgcolor: "#f5fafe", py: 3, minHeight: "100vh" }}>
       <Container maxWidth="xl" sx={{ px: 2 }}>
         <Card
           sx={{
             mb: 3,
-            borderRadius: 2,
-            boxShadow: 1,
-            border: "1px solid #ddd",
+            borderRadius: 3,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+            border: "1px solid #e0f0f8",
           }}
         >
           <CardHeader
@@ -133,7 +151,7 @@ const AdminDashboard = () => {
           />
           <Divider />
           <CardContent sx={{ pt: 2, pb: 1 }}>
-            <Grid container spacing={1}>
+            <Grid container spacing={1.5}>
               <Grid item xs={12} md={2.4}>
                 <TextField
                   size="small"
@@ -142,6 +160,7 @@ const AdminDashboard = () => {
                   fullWidth
                   value={filters.outletName}
                   onChange={handleChange("outletName")}
+                  sx={textFieldStyle}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -159,6 +178,7 @@ const AdminDashboard = () => {
                   fullWidth
                   value={filters.phone}
                   onChange={handleChange("phone")}
+                  sx={textFieldStyle}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -176,6 +196,7 @@ const AdminDashboard = () => {
                   fullWidth
                   value={filters.code}
                   onChange={handleChange("code")}
+                  sx={textFieldStyle}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -193,6 +214,7 @@ const AdminDashboard = () => {
                   fullWidth
                   value={filters.startDate}
                   onChange={handleChange("startDate")}
+                  sx={textFieldStyle}
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
@@ -204,6 +226,7 @@ const AdminDashboard = () => {
                   fullWidth
                   value={filters.endDate}
                   onChange={handleChange("endDate")}
+                  sx={textFieldStyle}
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
@@ -213,11 +236,10 @@ const AdminDashboard = () => {
               <Button
                 variant="contained"
                 size="small"
-                color="secondary"
                 startIcon={<FilterAltIcon fontSize="small" />}
                 onClick={fetchFilteredData}
                 disabled={loading}
-                sx={{ textTransform: "none", mr: 1 }}
+                sx={{ ...gradientButtonStyle, mr: 1 }}
               >
                 {loading ? (
                   <CircularProgress size={18} color="inherit" />
@@ -228,9 +250,8 @@ const AdminDashboard = () => {
               <Button
                 variant="contained"
                 size="small"
-                color="primary"
                 onClick={handleExcelExport}
-                sx={{ textTransform: "none" }}
+                sx={gradientButtonStyle}
               >
                 Export to Excel
               </Button>
@@ -244,29 +265,35 @@ const AdminDashboard = () => {
           </Typography>
         )}
 
-        <Paper elevation={2} sx={{ borderRadius: 2, p: 2 }}>
+        <Paper elevation={2} sx={{ borderRadius: 2, p: 2, height: "100%" }}>
           <Typography
             variant="h6"
             fontWeight={600}
             gutterBottom
             fontSize="1rem"
+            color="#0072ff"
           >
             Filtered Records
           </Typography>
-          <Box sx={{ height: 400 }}>
+          <Box sx={{ height: "50vh", width: "100%" }}>
             <DataGrid
               rows={records}
               columns={columns}
               pageSize={5}
               rowsPerPageOptions={[5]}
               disableSelectionOnClick
-              autoHeight
               sx={{
-                fontSize: "0.8rem",
-                "& .MuiDataGrid-cell": { py: 0.5 },
-                "& .MuiDataGrid-columnHeaders": { py: 0.5 },
+                fontSize: "0.85rem",
+                backgroundColor: "#ffffff",
                 borderRadius: 2,
-                backgroundColor: "#fafafa",
+                "& .MuiDataGrid-columnHeaders": {
+                  backgroundColor: "#e6f7ff",
+                  color: "#0072ff",
+                  fontWeight: 600,
+                },
+                "& .MuiDataGrid-cell": {
+                  py: 1,
+                },
               }}
             />
           </Box>
