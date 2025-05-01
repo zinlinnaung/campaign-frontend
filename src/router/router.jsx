@@ -5,6 +5,7 @@ import DashboardPage from "../pages/DashboardPage";
 import SettingsPage from "../pages/SettingPage";
 import Home from "../pages/Home";
 import QrCodeGenerator from "../components/QrCodeGenerator";
+import LoginPage from "../pages/LoginPage";
 
 export const RouterComponent = () => {
   return (
@@ -17,6 +18,7 @@ export const RouterComponent = () => {
       </Route>
       <Route path="code" element={<Home />} /> {/* Account Settings */}
       <Route path="qr" element={<QrCodeGenerator />} />
+      <Route path="login" element={<LoginPage />} />
     </Routes>
   );
 };

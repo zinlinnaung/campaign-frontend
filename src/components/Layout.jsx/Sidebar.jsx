@@ -1,3 +1,4 @@
+// Sidebar.jsx
 import React, { useState } from "react";
 import {
   Drawer,
@@ -8,122 +9,126 @@ import {
   Box,
   Typography,
   IconButton,
+  useMediaQuery,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
-import MenuIcon from "@mui/icons-material/Menu"; // Menu Icon for mobile
+import MenuIcon from "@mui/icons-material/Menu";
 import { Link, useLocation } from "react-router-dom";
-import { useMediaQuery } from "@mui/material";
+
+export const drawerWidth = 240;
 
 const Sidebar = () => {
   const location = useLocation();
-  const [open, setOpen] = useState(false); // State to toggle drawer on mobile
-  const isMobile = useMediaQuery("(max-width: 768px)"); // Check if the screen width is mobile size
+  const [open, setOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 1090px)");
 
-  // Define the color scheme based on your dashboard theme
-  const selectedColor = "#10B981"; // Green for selected items
-  const hoverColor = "#16A34A"; // Slightly darker green for hover
-  const textColor = "#F3F4F6"; // Light gray for text
-  const sidebarBg = "#111827"; // Dark background for sidebar
-  const headerBg = "#0f172a"; // Lighter background for header
+  const selectedColor = "#10B981";
+  const hoverColor = "#16A34A";
+  const textColor = "#F3F4F6";
+  const sidebarBg = "linear-gradient(to top, #5db6be, #34609e)";
+  const headerBg = "#0f172a";
 
   const menuItems = [
-    { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
-    { text: "Account Settings", icon: <SettingsIcon />, path: "/settings" },
+    { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
+    {
+      text: "Account Settings",
+      icon: <SettingsIcon />,
+      path: "/dashboard/settings",
+    },
   ];
 
-  // Handle mobile drawer toggle
-  const handleDrawerToggle = () => {
-    setOpen(!open);
-  };
-  const gradientButtonStyle = {
-    background: "linear-gradient(to right, #5db6be, #34609e)",
-    color: "#fff",
-    textTransform: "none",
-    borderRadius: 2,
-    px: 2,
-    "&:hover": {
-      background: "linear-gradient(to right, #3cbfa7, #15124d)",
-    },
-  };
+  const handleDrawerToggle = () => setOpen(!open);
+
+  const drawerContent = (
+    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      {/* Logo / Title */}
+      <Box
+        sx={{
+          p: 2,
+          // bgcolor: headerBg,
+          textAlign: "center",
+          borderBottom: "1px solid #2d3748",
+        }}
+      >
+        <Typography variant="h6" fontWeight="bold" color={textColor}>
+          My Admin
+        </Typography>
+      </Box>
+
+      {/* Menu List */}
+      <List sx={{ mt: 2 }}>
+        {menuItems.map(({ text, icon, path }) => (
+          <ListItem
+            button
+            key={text}
+            component={Link}
+            to={path}
+            selected={location.pathname === path}
+            onClick={isMobile ? handleDrawerToggle : undefined}
+            sx={{
+              "&.Mui-selected": {
+                backgroundColor: selectedColor,
+                "& .MuiListItemText-primary": {
+                  fontWeight: "bold",
+                },
+                "& .MuiListItemIcon-root": {
+                  color: "#fff",
+                },
+              },
+              "&:hover": {
+                backgroundColor: hoverColor,
+              },
+              "& .MuiListItemText-root": {
+                color: textColor,
+              },
+            }}
+          >
+            <ListItemIcon sx={{ color: textColor }}>{icon}</ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
 
   return (
     <>
-      {/* Mobile Hamburger Menu Icon */}
       {isMobile && (
         <IconButton
           edge="start"
-          sx={{ color: textColor, position: "absolute", top: 10, left: 10 }}
           onClick={handleDrawerToggle}
+          sx={{
+            color: textColor,
+            position: "fixed",
+            top: 10,
+            left: 10,
+            zIndex: 1301,
+          }}
         >
           <MenuIcon />
         </IconButton>
       )}
 
-      {/* Drawer for Sidebar */}
       <Drawer
-        variant={isMobile ? "temporary" : "permanent"} // Temporary for mobile, permanent for desktop
-        open={isMobile ? open : true} // Drawer is controlled via state on mobile
-        onClose={handleDrawerToggle} // Close on mobile when clicking outside
+        variant={isMobile ? "temporary" : "permanent"}
+        open={isMobile ? open : true}
+        onClose={handleDrawerToggle}
         sx={{
-          width: 240,
+          width: drawerWidth,
+          flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
-            width: 240,
+            width: drawerWidth,
             boxSizing: "border-box",
-            background: "linear-gradient(to top, #5db6be, #34609e)",
+            background: sidebarBg,
             color: textColor,
           },
         }}
         ModalProps={{
-          keepMounted: true, // Keep the drawer mounted on mobile devices
+          keepMounted: true,
         }}
       >
-        {/* Logo / Title */}
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: "headerBg",
-            textAlign: "center",
-            borderBottom: "1px solid #2d3748",
-          }}
-        >
-          <Typography variant="h6" color={textColor} fontWeight="bold">
-            My Admin
-          </Typography>
-        </Box>
-
-        {/* Menu List */}
-        <List sx={{ mt: 2 }}>
-          {menuItems.map(({ text, icon, path }) => (
-            <ListItem
-              button
-              key={text}
-              component={Link}
-              to={path}
-              selected={location.pathname === path}
-              sx={{
-                "&.Mui-selected": {
-                  backgroundColor: selectedColor, // Color for selected item
-                  "& .MuiListItemText-primary": {
-                    fontWeight: "bold", // Bold text for selected item
-                  },
-                  "& .MuiListItemIcon-root": {
-                    color: "#fff", // Keep icon color white when selected
-                  },
-                },
-                "&:hover": {
-                  backgroundColor: hoverColor, // Hover color for menu items
-                },
-                "& .MuiListItemText-root": {
-                  color: textColor, // Default text color
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: textColor }}>{icon}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
+        {drawerContent}
       </Drawer>
     </>
   );

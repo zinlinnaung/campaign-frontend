@@ -283,7 +283,7 @@ export default function QrCodeGenerator() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        minHeight: "100vh",
+        minHeight: "70vh",
       }}
     >
       <Paper
@@ -407,7 +407,7 @@ export default function QrCodeGenerator() {
                 sx={{ mb: 2 }}
               />
 
-              <FormControl fullWidth sx={{ mb: 2 }}>
+              {/* <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel>Dot Style</InputLabel>
                 <Select
                   value={dotStyle}
@@ -418,7 +418,7 @@ export default function QrCodeGenerator() {
                   <MenuItem value="square">Square</MenuItem>
                   <MenuItem value="dot">Dot</MenuItem>
                 </Select>
-              </FormControl>
+              </FormControl> */}
 
               <Box
                 onDrop={(e) => {

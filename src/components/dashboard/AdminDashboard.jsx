@@ -128,8 +128,8 @@ const AdminDashboard = () => {
   }, []);
 
   return (
-    <Box sx={{ bgcolor: "#f5fafe", py: 3, minHeight: "100vh" }}>
-      <Container maxWidth="xl" sx={{ px: 2 }}>
+    <Box sx={{ bgcolor: "#f5fafe", py: 3, minHeight: "84vh" }}>
+      <Container maxWidth="lg" sx={{ px: 2 }}>
         <Card
           sx={{
             mb: 3,
@@ -275,7 +275,7 @@ const AdminDashboard = () => {
           >
             Filtered Records
           </Typography>
-          <Box sx={{ height: "50vh", width: "100%" }}>
+          <Box sx={{ height: "40vh", width: "100%" }}>
             <DataGrid
               rows={records}
               columns={columns}
