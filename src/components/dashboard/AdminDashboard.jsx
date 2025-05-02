@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Box,
@@ -12,53 +12,80 @@ import {
   Paper,
   Divider,
   Tooltip,
+  InputAdornment,
+  CircularProgress,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import SearchIcon from "@mui/icons-material/Search";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import TuneIcon from "@mui/icons-material/Tune";
 import * as XLSX from "xlsx";
 import { useRecordContext } from "../../context/RecordContext";
 
 const AdminDashboard = () => {
-  const [form, setForm] = useState({
+  const [filters, setFilters] = useState({
     outletName: "",
     phone: "",
     code: "",
-    name: "",
+    startDate: "",
+    endDate: "",
   });
 
-  const [error, setError] = useState("");
+  const [filteredRecords, setFilteredRecords] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const { records, addRecord } = useRecordContext();
+  const { records } = useRecordContext();
+
+  useEffect(() => {
+    setFilteredRecords(records);
+  }, [records]);
 
   const handleChange = (field) => (event) => {
-    setForm({ ...form, [field]: event.target.value });
+    setFilters((prev) => ({
+      ...prev,
+      [field]: event.target.value,
+    }));
   };
 
-  const handleSubmit = () => {
-    if (!form.outletName || !form.phone || !form.code || !form.name) {
-      setError("Please fill all fields.");
-      return;
-    }
+  const fetchFilteredData = () => {
+    setLoading(true);
+    const filtered = records.filter((record) => {
+      const matchesOutlet = record.outletName
+        .toLowerCase()
+        .includes(filters.outletName.toLowerCase());
+      const matchesPhone = record.phone
+        .toLowerCase()
+        .includes(filters.phone.toLowerCase());
+      const matchesCode = record.code
+        .toLowerCase()
+        .includes(filters.code.toLowerCase());
 
-    const newRecord = {
-      id: Date.now(), // ✅ Ensure unique ID
-      name: form.name,
-      phone: form.phone,
-      outletName: form.outletName,
-      code: form.code,
-      createdAt: new Date().toLocaleString(),
-    };
+      const createdAt = new Date(record.createdAt);
+      const start = filters.startDate ? new Date(filters.startDate) : null;
+      const end = filters.endDate ? new Date(filters.endDate) : null;
 
-    addRecord(newRecord);
-    setForm({ outletName: "", phone: "", code: "", name: "" });
-    setError("");
+      const matchesStartDate = !start || createdAt >= start;
+      const matchesEndDate = !end || createdAt <= end;
+
+      return (
+        matchesOutlet &&
+        matchesPhone &&
+        matchesCode &&
+        matchesStartDate &&
+        matchesEndDate
+      );
+    });
+
+    setFilteredRecords(filtered);
+    setLoading(false);
   };
 
   const handleExcelExport = () => {
-    const ws = XLSX.utils.json_to_sheet(records);
+    const ws = XLSX.utils.json_to_sheet(filteredRecords);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Submitted Records");
-    XLSX.writeFile(wb, "submitted_records.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Filtered Records");
+    XLSX.writeFile(wb, "filtered_records.xlsx");
   };
 
   const gradientButtonStyle = {
@@ -89,6 +116,12 @@ const AdminDashboard = () => {
     { field: "createdAt", headerName: "Created At", flex: 1 },
   ];
 
+  const displayedRecords = filteredRecords.filter((record) =>
+    Object.values(record).some((value) =>
+      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
   return (
     <Box sx={{ bgcolor: "#f5fafe", py: 3, minHeight: "84vh" }}>
       <Container maxWidth="lg" sx={{ px: 2 }}>
@@ -102,60 +135,94 @@ const AdminDashboard = () => {
         >
           <CardHeader
             avatar={
-              <Tooltip title="Add Record">
-                <AddCircleOutlineIcon fontSize="small" color="primary" />
+              <Tooltip title="Filter Records">
+                <TuneIcon fontSize="small" color="primary" />
               </Tooltip>
             }
             titleTypographyProps={{ fontWeight: 600, fontSize: "1rem" }}
-            title="Submit Prize Record"
-            subheader="Fill out the details below to add a new record"
+            title="Filter Prize Records"
+            subheader="Search by outlet, phone or prize code"
             subheaderTypographyProps={{ fontSize: "0.85rem" }}
           />
           <Divider />
           <CardContent sx={{ pt: 2, pb: 1 }}>
             <Grid container spacing={1.5}>
-              <Grid item xs={12} md={3}>
-                <TextField
-                  size="small"
-                  label="Customer Name"
-                  variant="outlined"
-                  fullWidth
-                  value={form.name}
-                  onChange={handleChange("name")}
-                  sx={textFieldStyle}
-                />
-              </Grid>
-              <Grid item xs={12} md={3}>
-                <TextField
-                  size="small"
-                  label="Phone Number"
-                  variant="outlined"
-                  fullWidth
-                  value={form.phone}
-                  onChange={handleChange("phone")}
-                  sx={textFieldStyle}
-                />
-              </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2.4}>
                 <TextField
                   size="small"
                   label="Outlet Name"
                   variant="outlined"
                   fullWidth
-                  value={form.outletName}
+                  value={filters.outletName}
                   onChange={handleChange("outletName")}
                   sx={textFieldStyle}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2.4}>
+                <TextField
+                  size="small"
+                  label="Phone Number"
+                  variant="outlined"
+                  fullWidth
+                  value={filters.phone}
+                  onChange={handleChange("phone")}
+                  sx={textFieldStyle}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={2.4}>
                 <TextField
                   size="small"
                   label="Prize Code"
                   variant="outlined"
                   fullWidth
-                  value={form.code}
+                  value={filters.code}
                   onChange={handleChange("code")}
                   sx={textFieldStyle}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={2.4}>
+                <TextField
+                  size="small"
+                  label="Start Date"
+                  type="date"
+                  fullWidth
+                  value={filters.startDate}
+                  onChange={handleChange("startDate")}
+                  sx={textFieldStyle}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={12} md={2.4}>
+                <TextField
+                  size="small"
+                  label="End Date"
+                  type="date"
+                  fullWidth
+                  value={filters.endDate}
+                  onChange={handleChange("endDate")}
+                  sx={textFieldStyle}
+                  InputLabelProps={{ shrink: true }}
                 />
               </Grid>
             </Grid>
@@ -164,10 +231,16 @@ const AdminDashboard = () => {
               <Button
                 variant="contained"
                 size="small"
-                onClick={handleSubmit}
+                startIcon={<FilterAltIcon fontSize="small" />}
+                onClick={fetchFilteredData}
+                disabled={loading}
                 sx={{ ...gradientButtonStyle, mr: 1 }}
               >
-                Submit Record
+                {loading ? (
+                  <CircularProgress size={18} color="inherit" />
+                ) : (
+                  "Apply Filters"
+                )}
               </Button>
               <Button
                 variant="contained"
@@ -181,12 +254,6 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
 
-        {error && (
-          <Typography color="error" fontSize="0.9rem" mb={2}>
-            {error}
-          </Typography>
-        )}
-
         <Paper elevation={2} sx={{ borderRadius: 2, p: 2, height: "100%" }}>
           <Typography
             variant="h6"
@@ -197,11 +264,34 @@ const AdminDashboard = () => {
           >
             Submitted Records
           </Typography>
+
+          <Box display="flex" justifyContent="flex-end" mb={1}>
+            <TextField
+              size="small"
+              variant="outlined"
+              placeholder="Search records..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                width: 250,
+                backgroundColor: "#fff",
+                borderRadius: 2,
+              }}
+            />
+          </Box>
+
           <Box sx={{ height: "40vh", width: "100%" }}>
             <DataGrid
-              rows={records}
+              rows={displayedRecords}
               columns={columns}
-              getRowId={(row) => row.id} // ✅ FIX: Ensure unique ID
+              getRowId={(row) => row.id}
               pageSize={5}
               rowsPerPageOptions={[5]}
               disableSelectionOnClick
