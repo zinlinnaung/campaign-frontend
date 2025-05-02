@@ -14,17 +14,19 @@ import {
   Paper,
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
-import EmailIcon from "@mui/icons-material/Email";
+import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import Confetti from "react-confetti";
 import { useWindowSize } from "@react-hook/window-size";
+import { useNavigate } from "react-router-dom"; // 👈 Required for routing
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   const [width, height] = useWindowSize();
+  const navigate = useNavigate(); // 👈 Hook for navigation
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -32,26 +34,23 @@ const LoginPage = () => {
     setError("");
     setShowDialog(false);
 
+    const phoneRegex = /^09\d{6,9}$/;
+
     setTimeout(() => {
-      // Simulating login logic
-      if (email === "user@example.com" && password === "password123") {
-        setShowDialog(true);
+      if (!phoneRegex.test(phone)) {
+        setError("ဖုန်းနံပါတ်သည် 09 ဖြင့်စတင်ရပါမည်။");
+      } else if (phone === "095192868" && password === "admin123") {
+        navigate("/dashboard"); // 👈 Redirect on success
       } else {
-        setError("Invalid credentials. Please try again.");
+        setError("ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက် မှားနေပါသည်။");
       }
+
       setIsLoading(false);
     }, 1000);
   };
 
-  const handleDialogClose = () => {
-    setShowDialog(false);
-    setEmail("");
-    setPassword("");
-  };
-
   return (
     <>
-      {/* Page Background */}
       <Box
         sx={{
           minHeight: "90vh",
@@ -66,7 +65,6 @@ const LoginPage = () => {
           px: 2,
         }}
       >
-        {/* Logo */}
         <Box
           component="img"
           src="logo.png"
@@ -78,7 +76,6 @@ const LoginPage = () => {
           }}
         />
 
-        {/* Card */}
         <Paper
           elevation={3}
           sx={{
@@ -100,22 +97,22 @@ const LoginPage = () => {
             padding={4}
             gap={2}
           >
-            <Typography mb={1}>Email</Typography>
+            <Typography mb={1}>ဖုန်းနံပါတ်</Typography>
             <TextField
-              label="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              label="ဖုန်းနံပါတ်ထည့်ပါ"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
               fullWidth
               disabled={isLoading}
               variant="outlined"
               InputProps={{
-                startAdornment: <EmailIcon fontSize="small" />,
+                startAdornment: <PhoneAndroidIcon fontSize="small" />,
               }}
             />
 
-            <Typography mb={1}>Password</Typography>
+            <Typography mb={1}>စကားဝှက်</Typography>
             <TextField
-              label="Password"
+              label="စကားဝှက်ထည့်ပါ"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -156,55 +153,6 @@ const LoginPage = () => {
             </Button>
           </Box>
         </Paper>
-      </Box>
-
-      {/* Confetti */}
-      {showDialog && (
-        <Box
-          position="fixed"
-          top={0}
-          left={0}
-          width="100vw"
-          height="100vh"
-          zIndex={1}
-          pointerEvents="none"
-        >
-          <Confetti
-            width={width}
-            height={height}
-            numberOfPieces={200}
-            recycle={false}
-          />
-        </Box>
-      )}
-
-      {/* Dialog */}
-      <Box position="relative" zIndex={2}>
-        <Dialog open={showDialog} onClose={handleDialogClose}>
-          <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
-            <Box
-              component="img"
-              src="tick.png"
-              alt="Success"
-              sx={{
-                width: { xs: "45%", sm: "140px", md: "20%", lg: "20%" },
-              }}
-            />
-          </DialogTitle>
-          <DialogContent>
-            <Stack spacing={2} alignItems="center">
-              <Typography textAlign="center">Congratulations!</Typography>
-              <Typography textAlign="center">
-                You have successfully logged in.
-              </Typography>
-            </Stack>
-          </DialogContent>
-          <DialogActions sx={{ justifyContent: "center" }}>
-            <Button variant="contained" onClick={handleDialogClose}>
-              OK
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Box>
     </>
   );

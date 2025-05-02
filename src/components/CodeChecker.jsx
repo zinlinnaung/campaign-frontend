@@ -17,6 +17,53 @@ import StarsIcon from "@mui/icons-material/Stars";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
 import Confetti from "react-confetti";
 import { useWindowSize } from "@react-hook/window-size";
+import { useRecordContext } from "../context/RecordContext";
+
+// 🎁 Prize codes
+const codeMap = {
+  // Enat codes
+  enat01: "Enat",
+  enat02: "Enat",
+  enat03: "Enat",
+  enat04: "Enat",
+  enat05: "Enat",
+  enat06: "Enat",
+  enat07: "Enat",
+  enat08: "Enat",
+  enat09: "Enat",
+  enat10: "Enat",
+  enat11: "Enat",
+  enat12: "Enat",
+  enat13: "Enat",
+  enat14: "Enat",
+  enat15: "Enat",
+  enat16: "Enat",
+  enat17: "Enat",
+  enat18: "Enat",
+  enat19: "Enat",
+  enat20: "Enat",
+  // Ferrovit codes
+  ferro01: "Ferrovit",
+  ferro02: "Ferrovit",
+  ferro03: "Ferrovit",
+  ferro04: "Ferrovit",
+  ferro05: "Ferrovit",
+  ferro06: "Ferrovit",
+  ferro07: "Ferrovit",
+  ferro08: "Ferrovit",
+  ferro09: "Ferrovit",
+  ferro10: "Ferrovit",
+  ferro11: "Ferrovit",
+  ferro12: "Ferrovit",
+  ferro13: "Ferrovit",
+  ferro14: "Ferrovit",
+  ferro15: "Ferrovit",
+  ferro16: "Ferrovit",
+  ferro17: "Ferrovit",
+  ferro18: "Ferrovit",
+  ferro19: "Ferrovit",
+  ferro20: "Ferrovit",
+};
 
 const CodeChecker = () => {
   const [name, setName] = useState("");
@@ -27,15 +74,16 @@ const CodeChecker = () => {
   const [error, setError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [showDialog, setShowDialog] = useState(false);
+  const [usedCodes, setUsedCodes] = useState(new Set());
   const [width, height] = useWindowSize();
+  const { addRecord } = useRecordContext(); // Access context
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    setResult("");
     setPhoneError("");
-    setShowDialog(false);
+    setResult("");
 
     const phoneRegex = /^09\d{7,9}$/;
     if (!phoneRegex.test(phone)) {
@@ -45,15 +93,35 @@ const CodeChecker = () => {
     }
 
     setTimeout(() => {
-      if (code.toLowerCase() === "1234") {
-        setResult("E-net");
-        setShowDialog(true);
-      } else if (code.toLowerCase() === "5678") {
-        setResult("Falobit");
-        setShowDialog(true);
-      } else {
+      const trimmedCode = code.trim().toLowerCase();
+
+      if (!codeMap.hasOwnProperty(trimmedCode)) {
         setError("Invalid code. Please try again.");
+      } else {
+        // ✅ Check if this code is already used in localStorage via context
+        const savedRecords = JSON.parse(
+          localStorage.getItem("records") || "[]"
+        );
+        const isCodeUsed = savedRecords.some(
+          (record) => record.code === trimmedCode
+        );
+
+        if (isCodeUsed) {
+          setError("လူကြီးမင်း ၏ ကုဒ် သည် အသုံးပြုပြီးသား ဖြစ်နေပါသည်");
+        } else {
+          const prize = codeMap[trimmedCode];
+          addRecord({
+            name,
+            phone,
+            code: trimmedCode,
+            prize,
+          });
+
+          setResult(prize);
+          setShowDialog(true);
+        }
       }
+
       setIsLoading(false);
     }, 1000);
   };
@@ -67,12 +135,12 @@ const CodeChecker = () => {
 
   const getPrizeStyle = () => {
     switch (result) {
-      case "E-net":
+      case "Enat":
         return {
           color: "#0f5132",
           icon: <StarsIcon fontSize="large" color="success" />,
         };
-      case "Falobit":
+      case "Ferrovit":
         return {
           color: "#664d03",
           icon: <FlashOnIcon fontSize="large" color="warning" />,
@@ -82,11 +150,10 @@ const CodeChecker = () => {
     }
   };
 
-  const { icon, color } = getPrizeStyle();
+  const { icon } = getPrizeStyle();
 
   return (
     <>
-      {/* Page Background */}
       <Box
         sx={{
           minHeight: "90vh",
@@ -101,7 +168,6 @@ const CodeChecker = () => {
           px: 2,
         }}
       >
-        {/* Logo */}
         <Box
           component="img"
           src="logo.png"
@@ -113,7 +179,6 @@ const CodeChecker = () => {
           }}
         />
 
-        {/* Card */}
         <Paper
           elevation={1}
           sx={{
@@ -128,47 +193,26 @@ const CodeChecker = () => {
         >
           <Box
             component="form"
-            maxWidth={{ xs: "100%", sm: "90%", md: "100%", lg: "100%" }}
             onSubmit={handleSubmit}
             display="flex"
             flexDirection="column"
-            justifyContent={"center"}
-            // alignItems={"center"}
             padding={4}
-            // maxWidth={"50%"}
             gap={2}
           >
-            <Typography
-              // variant="h5"
-              // textAlign="center"
-              // fontWeight="bold"
-              fontSize={"1.1rem"}
-              color="black"
-              // mb={1}
-            >
+            <Typography fontSize={"1.1rem"} color="black">
               အမည်
             </Typography>
             <TextField
-              // fontSize={"1.1rem"}
-              label="မိမိ၏အမည်ထည့်ပါ"
+              label="ကာစတန်မာ၏ အမည်ဖြည့်သွင်းပါ"
               value={name}
               onChange={(e) => setName(e.target.value)}
               fullWidth
               disabled={isLoading}
               variant="outlined"
             />
-            <Typography
-              fontSize={"1.1rem"}
-              // variant="h5"
-              // textAlign="center"
-              // fontWeight="bold"
-              // color="#1F4F9E"
-              // mb={1}
-            >
-              ဖုန်းနံပါတ်
-            </Typography>
+            <Typography fontSize={"1.1rem"}>ဖုန်းနံပါတ်</Typography>
             <TextField
-              label="မိမိ၏ဖုန်းနံပါတ်ထည့်ပါ"
+              label="ကာစတန်မာ၏ ဖုန်းနံပါတ်ဖြည့်သွင်းပါ"
               value={phone}
               onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
               fullWidth
@@ -177,34 +221,23 @@ const CodeChecker = () => {
               helperText={phoneError}
               variant="outlined"
             />
-            <Typography
-              fontSize={"1.1rem"}
-              // variant="h5"
-              // textAlign="center"
-              // fontWeight="bold"
-              // color="#1F4F9E"
-              // mb={1}
-            >
-              လျို့ဝှက်ကုဒ်
-            </Typography>
+            <Typography fontSize={"1.1rem"}>လျို့ဝှက်ကုဒ်</Typography>
             <TextField
-              label="မိမိ၏လျို့ဝှက်ကုဒ်ထည့်ပါ"
+              label="ကာစတန်မာ ၏ လျှို့၀ှက်ကုဒ်ကို ဖြည့်သွင်းပါ"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               fullWidth
               disabled={isLoading}
               variant="outlined"
             />
-
             {error && <Alert severity="error">{error}</Alert>}
           </Box>
         </Paper>
+
         <Button
           type="submit"
           variant="contained"
-          onSubmit={handleSubmit}
           onClick={handleSubmit}
-          // fullWidth
           size="large"
           sx={{
             background: "linear-gradient(to right, #00B5FF, #1F4F9E)",
@@ -229,7 +262,6 @@ const CodeChecker = () => {
         </Button>
       </Box>
 
-      {/* Confetti */}
       {showDialog && (
         <Box
           position="fixed"
@@ -249,24 +281,21 @@ const CodeChecker = () => {
         </Box>
       )}
 
-      {/* Dialog */}
-      <Box position="relative" zIndex={2} borderRadius={"30%"}>
+      <Box position="relative" zIndex={2}>
         <Dialog open={showDialog} onClose={handleDialogClose}>
           <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
             <Box
               component="img"
               src="tick.png"
-              alt="Mega Logo"
+              alt="Tick"
               sx={{
                 width: { xs: "30%", sm: "140px", md: "20%", lg: "20%" },
-                // mt: 8,
-                // mb: 3,
               }}
             />
           </DialogTitle>
           <DialogContent>
             <Stack spacing={2} alignItems="center">
-              {/* {icon} */}
+              {icon}
               <Typography textAlign="center">ဂုဏ်ယူပါတယ်</Typography>
               <Typography textAlign="center">
                 လူကြီးမင်းဖြည့်စွက်ထားသောကုဒ်မှ
@@ -274,7 +303,6 @@ const CodeChecker = () => {
               <Typography textAlign="center">
                 {result} ဒစ်စကောင့်ရရှိပါတယ်
               </Typography>
-              {/* <Typography variant="h6">You won: {result} 🎁</Typography> */}
             </Stack>
           </DialogContent>
           <DialogActions sx={{ justifyContent: "center" }}>
@@ -284,6 +312,7 @@ const CodeChecker = () => {
           </DialogActions>
         </Dialog>
       </Box>
+
       <Box
         width={"100%"}
         height={"10vh"}

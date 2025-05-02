@@ -1,98 +1,64 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Typography,
   Box,
   TextField,
   Button,
-  CircularProgress,
   Grid,
   Card,
   CardContent,
   CardHeader,
-  InputAdornment,
   Container,
   Paper,
   Divider,
   Tooltip,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import SearchIcon from "@mui/icons-material/Search";
-import TuneIcon from "@mui/icons-material/Tune";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import * as XLSX from "xlsx";
+import { useRecordContext } from "../../context/RecordContext";
 
 const AdminDashboard = () => {
-  const [filters, setFilters] = useState({
+  const [form, setForm] = useState({
     outletName: "",
     phone: "",
     code: "",
-    startDate: "",
-    endDate: "",
+    name: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [records, setRecords] = useState([]);
+
   const [error, setError] = useState("");
 
+  const { records, addRecord } = useRecordContext();
+
   const handleChange = (field) => (event) => {
-    setFilters({ ...filters, [field]: event.target.value });
+    setForm({ ...form, [field]: event.target.value });
   };
 
-  const fetchFilteredData = async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const params = new URLSearchParams();
-
-      if (filters.outletName) params.append("outletName", filters.outletName);
-      if (filters.phone) params.append("phone", filters.phone);
-      if (filters.code) params.append("code", filters.code);
-      if (filters.startDate) params.append("startDate", filters.startDate);
-      if (filters.endDate) params.append("endDate", filters.endDate);
-
-      const response = await fetch(
-        `http://localhost:5051/api/customer-records?${params.toString()}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok)
-        throw new Error(`Failed to fetch records: ${response.statusText}`);
-
-      const contentType = response.headers.get("Content-Type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Expected JSON response, but received non-JSON");
-      }
-
-      const data = await response.json();
-
-      const formatted = data.map((item) => ({
-        id: item.id,
-        name: item.name,
-        phone: item.phone,
-        outletName: item.outletName,
-        code: item.code.code,
-        createdAt: new Date(item.createdAt).toLocaleString(),
-      }));
-
-      setRecords(formatted);
-    } catch (err) {
-      console.error(err);
-      setError("An error occurred while fetching records.");
-    } finally {
-      setLoading(false);
+  const handleSubmit = () => {
+    if (!form.outletName || !form.phone || !form.code || !form.name) {
+      setError("Please fill all fields.");
+      return;
     }
+
+    const newRecord = {
+      id: Date.now(), // ✅ Ensure unique ID
+      name: form.name,
+      phone: form.phone,
+      outletName: form.outletName,
+      code: form.code,
+      createdAt: new Date().toLocaleString(),
+    };
+
+    addRecord(newRecord);
+    setForm({ outletName: "", phone: "", code: "", name: "" });
+    setError("");
   };
 
   const handleExcelExport = () => {
     const ws = XLSX.utils.json_to_sheet(records);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Filtered Records");
-    XLSX.writeFile(wb, "filtered_records.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Submitted Records");
+    XLSX.writeFile(wb, "submitted_records.xlsx");
   };
 
   const gradientButtonStyle = {
@@ -115,17 +81,13 @@ const AdminDashboard = () => {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
+    { field: "id", headerName: "ID", width: 90 },
     { field: "name", headerName: "Customer Name", flex: 1 },
     { field: "phone", headerName: "Phone", flex: 1 },
     { field: "outletName", headerName: "Outlet", flex: 1 },
     { field: "code", headerName: "Prize Code", flex: 1 },
     { field: "createdAt", headerName: "Created At", flex: 1 },
   ];
-
-  useEffect(() => {
-    fetchFilteredData();
-  }, []);
 
   return (
     <Box sx={{ bgcolor: "#f5fafe", py: 3, minHeight: "84vh" }}>
@@ -140,94 +102,60 @@ const AdminDashboard = () => {
         >
           <CardHeader
             avatar={
-              <Tooltip title="Filter Records">
-                <TuneIcon fontSize="small" color="primary" />
+              <Tooltip title="Add Record">
+                <AddCircleOutlineIcon fontSize="small" color="primary" />
               </Tooltip>
             }
             titleTypographyProps={{ fontWeight: 600, fontSize: "1rem" }}
-            title="Filter Prize Records"
-            subheader="Search by outlet, phone or prize code"
+            title="Submit Prize Record"
+            subheader="Fill out the details below to add a new record"
             subheaderTypographyProps={{ fontSize: "0.85rem" }}
           />
           <Divider />
           <CardContent sx={{ pt: 2, pb: 1 }}>
             <Grid container spacing={1.5}>
-              <Grid item xs={12} md={2.4}>
+              <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
-                  label="Outlet Name"
+                  label="Customer Name"
                   variant="outlined"
                   fullWidth
-                  value={filters.outletName}
-                  onChange={handleChange("outletName")}
+                  value={form.name}
+                  onChange={handleChange("name")}
                   sx={textFieldStyle}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  }}
                 />
               </Grid>
-              <Grid item xs={12} md={2.4}>
+              <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
                   label="Phone Number"
                   variant="outlined"
                   fullWidth
-                  value={filters.phone}
+                  value={form.phone}
                   onChange={handleChange("phone")}
                   sx={textFieldStyle}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  }}
                 />
               </Grid>
-              <Grid item xs={12} md={2.4}>
+              <Grid item xs={12} md={3}>
+                <TextField
+                  size="small"
+                  label="Outlet Name"
+                  variant="outlined"
+                  fullWidth
+                  value={form.outletName}
+                  onChange={handleChange("outletName")}
+                  sx={textFieldStyle}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
                   label="Prize Code"
                   variant="outlined"
                   fullWidth
-                  value={filters.code}
+                  value={form.code}
                   onChange={handleChange("code")}
                   sx={textFieldStyle}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} md={2.4}>
-                <TextField
-                  size="small"
-                  label="Start Date"
-                  type="date"
-                  fullWidth
-                  value={filters.startDate}
-                  onChange={handleChange("startDate")}
-                  sx={textFieldStyle}
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-              <Grid item xs={12} md={2.4}>
-                <TextField
-                  size="small"
-                  label="End Date"
-                  type="date"
-                  fullWidth
-                  value={filters.endDate}
-                  onChange={handleChange("endDate")}
-                  sx={textFieldStyle}
-                  InputLabelProps={{ shrink: true }}
                 />
               </Grid>
             </Grid>
@@ -236,16 +164,10 @@ const AdminDashboard = () => {
               <Button
                 variant="contained"
                 size="small"
-                startIcon={<FilterAltIcon fontSize="small" />}
-                onClick={fetchFilteredData}
-                disabled={loading}
+                onClick={handleSubmit}
                 sx={{ ...gradientButtonStyle, mr: 1 }}
               >
-                {loading ? (
-                  <CircularProgress size={18} color="inherit" />
-                ) : (
-                  "Apply Filters"
-                )}
+                Submit Record
               </Button>
               <Button
                 variant="contained"
@@ -273,12 +195,13 @@ const AdminDashboard = () => {
             fontSize="1rem"
             color="#0072ff"
           >
-            Filtered Records
+            Submitted Records
           </Typography>
           <Box sx={{ height: "40vh", width: "100%" }}>
             <DataGrid
               rows={records}
               columns={columns}
+              getRowId={(row) => row.id} // ✅ FIX: Ensure unique ID
               pageSize={5}
               rowsPerPageOptions={[5]}
               disableSelectionOnClick
