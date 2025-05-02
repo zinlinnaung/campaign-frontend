@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom"; // Import necessary routing components
+import { Routes, Route, Navigate } from "react-router-dom"; // Added Navigate
 import Layout from "../components/Layout.jsx/Layout";
 import DashboardPage from "../pages/DashboardPage";
 import SettingsPage from "../pages/SettingPage";
@@ -10,15 +10,18 @@ import LoginPage from "../pages/LoginPage";
 export const RouterComponent = () => {
   return (
     <Routes>
-      {/* Wrap all routes in the Layout */}
+      {/* Redirect default path "/" to "/code" */}
+      <Route path="/" element={<Navigate to="/code" replace />} />
+
+      {/* Wrap all dashboard routes in Layout */}
       <Route path="/dashboard" element={<Layout />}>
-        <Route index element={<DashboardPage />} /> {/* Admin Dashboard */}
-        <Route path="settings" element={<SettingsPage />} />{" "}
-        {/* Add more routes here */}
+        <Route index element={<DashboardPage />} />
+        <Route path="settings" element={<SettingsPage />} />
       </Route>
-      <Route path="code" element={<Home />} /> {/* Account Settings */}
-      <Route path="qr" element={<QrCodeGenerator />} />
-      <Route path="login" element={<LoginPage />} />
+
+      <Route path="/code" element={<Home />} />
+      <Route path="/qr" element={<QrCodeGenerator />} />
+      <Route path="/login" element={<LoginPage />} />
     </Routes>
   );
 };
