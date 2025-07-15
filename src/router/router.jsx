@@ -6,6 +6,7 @@ import SettingsPage from "../pages/SettingPage";
 import Home from "../pages/Home";
 import QrCodeGenerator from "../components/QrCodeGenerator";
 import LoginPage from "../pages/LoginPage";
+import ExcelUploadPage from "../components/upload/UploadPage";
 
 export const RouterComponent = () => {
   return (
@@ -17,6 +18,11 @@ export const RouterComponent = () => {
       <Route path="/dashboard" element={<Layout />}>
         <Route index element={<DashboardPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route index element={<DashboardPage />} /> {/* Admin Dashboard */}
+        <Route path="settings" element={<SettingsPage />} />{" "}
+        <Route path="upload" element={<ExcelUploadPage />} />{" "}
+        {/* Upload Page */}
+        {/* Add more routes here */}
       </Route>
 
       <Route path="/code" element={<Home />} />

@@ -31,6 +31,7 @@ const Sidebar = () => {
 
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
+    { text: "upload", icon: <DashboardIcon />, path: "/dashboard/upload" },
     {
       text: "Account Settings",
       icon: <SettingsIcon />,

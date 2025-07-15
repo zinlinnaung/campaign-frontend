@@ -20,7 +20,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import TuneIcon from "@mui/icons-material/Tune";
 import * as XLSX from "xlsx";
-import { useRecordContext } from "../../context/RecordContext";
+import axios from "axios";
 
 const AdminDashboard = () => {
   const [filters, setFilters] = useState({
@@ -31,15 +31,35 @@ const AdminDashboard = () => {
     endDate: "",
   });
 
+  const [records, setRecords] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { records } = useRecordContext();
+  const fetchRecords = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get("http://localhost:5051/api/customer-records");
+      const transformed = res.data.map((r) => ({
+        id: r.id,
+        name: r.name,
+        phone: r.phone,
+        outletName: r.outletName,
+        code: r.code.code,
+        createdAt: new Date(r.createdAt).toLocaleString(),
+      }));
+      setRecords(transformed);
+      setFilteredRecords(transformed);
+    } catch (err) {
+      console.error("Failed to fetch records:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setFilteredRecords(records);
-  }, [records]);
+    fetchRecords();
+  }, []);
 
   const handleChange = (field) => (event) => {
     setFilters((prev) => ({
@@ -49,7 +69,6 @@ const AdminDashboard = () => {
   };
 
   const fetchFilteredData = () => {
-    setLoading(true);
     const filtered = records.filter((record) => {
       const matchesOutlet = record.outletName
         .toLowerCase()
@@ -78,7 +97,6 @@ const AdminDashboard = () => {
     });
 
     setFilteredRecords(filtered);
-    setLoading(false);
   };
 
   const handleExcelExport = () => {
@@ -147,60 +165,32 @@ const AdminDashboard = () => {
           <Divider />
           <CardContent sx={{ pt: 2, pb: 1 }}>
             <Grid container spacing={1.5}>
-              <Grid item xs={12} md={2.4}>
-                <TextField
-                  size="small"
-                  label="Outlet Name"
-                  variant="outlined"
-                  fullWidth
-                  value={filters.outletName}
-                  onChange={handleChange("outletName")}
-                  sx={textFieldStyle}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} md={2.4}>
-                <TextField
-                  size="small"
-                  label="Phone Number"
-                  variant="outlined"
-                  fullWidth
-                  value={filters.phone}
-                  onChange={handleChange("phone")}
-                  sx={textFieldStyle}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} md={2.4}>
-                <TextField
-                  size="small"
-                  label="Prize Code"
-                  variant="outlined"
-                  fullWidth
-                  value={filters.code}
-                  onChange={handleChange("code")}
-                  sx={textFieldStyle}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
+              {["outletName", "phone", "code"].map((field, i) => (
+                <Grid item xs={12} md={2.4} key={field}>
+                  <TextField
+                    size="small"
+                    label={
+                      field === "code"
+                        ? "Prize Code"
+                        : field === "phone"
+                        ? "Phone Number"
+                        : "Outlet Name"
+                    }
+                    variant="outlined"
+                    fullWidth
+                    value={filters[field]}
+                    onChange={handleChange(field)}
+                    sx={textFieldStyle}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+              ))}
               <Grid item xs={12} md={2.4}>
                 <TextField
                   size="small"
@@ -295,6 +285,7 @@ const AdminDashboard = () => {
               pageSize={5}
               rowsPerPageOptions={[5]}
               disableSelectionOnClick
+              loading={loading}
               sx={{
                 fontSize: "0.85rem",
                 backgroundColor: "#ffffff",
