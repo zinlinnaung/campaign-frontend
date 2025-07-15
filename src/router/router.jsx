@@ -6,6 +6,7 @@ import SettingsPage from "../pages/SettingPage";
 import Home from "../pages/Home";
 import QrCodeGenerator from "../components/QrCodeGenerator";
 import LoginPage from "../pages/LoginPage";
+import CircleCodeImage from "../components/CircleCodeImage";
 
 export const RouterComponent = () => {
   return (
@@ -20,7 +21,7 @@ export const RouterComponent = () => {
       </Route>
 
       <Route path="/code" element={<Home />} />
-      <Route path="/qr" element={<QrCodeGenerator />} />
+      <Route path="/qr" element={<CircleCodeImage />} />
       <Route path="/login" element={<LoginPage />} />
     </Routes>
   );
