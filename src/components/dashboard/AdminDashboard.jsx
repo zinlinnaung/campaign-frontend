@@ -27,6 +27,7 @@ const AdminDashboard = () => {
     outletName: "",
     phone: "",
     code: "",
+    prizeName: "",
     startDate: "",
     endDate: "",
   });
@@ -46,6 +47,7 @@ const AdminDashboard = () => {
         phone: r.phone,
         outletName: r.outletName,
         code: r.code.code,
+        prizeName: r.code.prizeName,
         createdAt: new Date(r.createdAt).toLocaleString(),
       }));
       setRecords(transformed);
@@ -79,6 +81,9 @@ const AdminDashboard = () => {
       const matchesCode = record.code
         .toLowerCase()
         .includes(filters.code.toLowerCase());
+      const matchesPrizeName = record.prizeName
+        .toLowerCase()
+        .includes(filters.prizeName.toLowerCase());
 
       const createdAt = new Date(record.createdAt);
       const start = filters.startDate ? new Date(filters.startDate) : null;
@@ -91,6 +96,7 @@ const AdminDashboard = () => {
         matchesOutlet &&
         matchesPhone &&
         matchesCode &&
+        matchesPrizeName &&
         matchesStartDate &&
         matchesEndDate
       );
@@ -131,6 +137,7 @@ const AdminDashboard = () => {
     { field: "phone", headerName: "Phone", flex: 1 },
     { field: "outletName", headerName: "Outlet", flex: 1 },
     { field: "code", headerName: "Prize Code", flex: 1 },
+    { field: "prizeName", headerName: "Prize Name", flex: 1 },
     { field: "createdAt", headerName: "Created At", flex: 1 },
   ];
 
@@ -191,6 +198,26 @@ const AdminDashboard = () => {
                   />
                 </Grid>
               ))}
+
+              <Grid item xs={12} md={2.4}>
+                <TextField
+                  size="small"
+                  label="Prize Name"
+                  variant="outlined"
+                  fullWidth
+                  value={filters.prizeName}
+                  onChange={handleChange("prizeName")}
+                  sx={textFieldStyle}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+
               <Grid item xs={12} md={2.4}>
                 <TextField
                   size="small"
