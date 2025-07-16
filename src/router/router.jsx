@@ -7,6 +7,8 @@ import Home from "../pages/Home";
 import QrCodeGenerator from "../components/QrCodeGenerator";
 import LoginPage from "../pages/LoginPage";
 import ExcelUploadPage from "../components/upload/UploadPage";
+import EnatDashboard from "../components/Enat/EnatDashboard";
+import FerrovitDashboard from "../components/Ferrovit/FerrovitDashboard";
 
 export const RouterComponent = () => {
   return (
@@ -21,6 +23,8 @@ export const RouterComponent = () => {
         <Route index element={<DashboardPage />} /> {/* Admin Dashboard */}
         <Route path="settings" element={<SettingsPage />} />{" "}
         <Route path="upload" element={<ExcelUploadPage />} />{" "}
+        <Route path="enat" element={<EnatDashboard />} />
+        <Route path="farrovit" element={<FerrovitDashboard />} />
         {/* Upload Page */}
         {/* Add more routes here */}
       </Route>

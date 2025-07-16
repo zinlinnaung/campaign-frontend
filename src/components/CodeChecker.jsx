@@ -17,68 +17,21 @@ import StarsIcon from "@mui/icons-material/Stars";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
 import Confetti from "react-confetti";
 import { useWindowSize } from "@react-hook/window-size";
-import { useRecordContext } from "../context/RecordContext";
-
-// 🎁 Prize codes
-const codeMap = {
-  // Enat codes
-  enat01: "Enat",
-  enat02: "Enat",
-  enat03: "Enat",
-  enat04: "Enat",
-  enat05: "Enat",
-  enat06: "Enat",
-  enat07: "Enat",
-  enat08: "Enat",
-  enat09: "Enat",
-  enat10: "Enat",
-  enat11: "Enat",
-  enat12: "Enat",
-  enat13: "Enat",
-  enat14: "Enat",
-  enat15: "Enat",
-  enat16: "Enat",
-  enat17: "Enat",
-  enat18: "Enat",
-  enat19: "Enat",
-  enat20: "Enat",
-  // Ferrovit codes
-  ferro01: "Ferrovit",
-  ferro02: "Ferrovit",
-  ferro03: "Ferrovit",
-  ferro04: "Ferrovit",
-  ferro05: "Ferrovit",
-  ferro06: "Ferrovit",
-  ferro07: "Ferrovit",
-  ferro08: "Ferrovit",
-  ferro09: "Ferrovit",
-  ferro10: "Ferrovit",
-  ferro11: "Ferrovit",
-  ferro12: "Ferrovit",
-  ferro13: "Ferrovit",
-  ferro14: "Ferrovit",
-  ferro15: "Ferrovit",
-  ferro16: "Ferrovit",
-  ferro17: "Ferrovit",
-  ferro18: "Ferrovit",
-  ferro19: "Ferrovit",
-  ferro20: "Ferrovit",
-};
+import axios from "axios";
 
 const CodeChecker = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
+  const [outletName, setOutletName] = useState(""); // New
   const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [showDialog, setShowDialog] = useState(false);
-  const [usedCodes, setUsedCodes] = useState(new Set());
   const [width, height] = useWindowSize();
-  const { addRecord } = useRecordContext(); // Access context
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
@@ -92,38 +45,29 @@ const CodeChecker = () => {
       return;
     }
 
-    setTimeout(() => {
-      const trimmedCode = code.trim().toLowerCase();
-
-      if (!codeMap.hasOwnProperty(trimmedCode)) {
-        setError("Invalid code. Please try again.");
-      } else {
-        // ✅ Check if this code is already used in localStorage via context
-        const savedRecords = JSON.parse(
-          localStorage.getItem("records") || "[]"
-        );
-        const isCodeUsed = savedRecords.some(
-          (record) => record.code === trimmedCode
-        );
-
-        if (isCodeUsed) {
-          setError("လူကြီးမင်း ၏ ကုဒ် သည် အသုံးပြုပြီးသား ဖြစ်နေပါသည်");
-        } else {
-          const prize = codeMap[trimmedCode];
-          addRecord({
-            name,
-            phone,
-            code: trimmedCode,
-            prize,
-          });
-
-          setResult(prize);
-          setShowDialog(true);
+    try {
+      const res = await axios.post(
+        "https://megawecare.tharapa.ai/api/customer-records",
+        {
+          name,
+          phone,
+          code,
+          outletName,
         }
-      }
+      );
 
+      const prizeName = res.data?.prizeName || "Prize";
+      setResult(prizeName);
+      setShowDialog(true);
+    } catch (err) {
+      if (err.response && err.response.status === 409) {
+        setError("လူကြီးမင်း ၏ ကုဒ် သည် အသုံးပြုပြီးသား ဖြစ်နေပါသည်");
+      } else {
+        setError("စနစ်အမှားရှိနေပါသည်။ ကျေးဇူးပြုပြီးနောက်တစ်ကြိမ်ပြန်စမ်းပါ။");
+      }
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleDialogClose = () => {
@@ -131,22 +75,26 @@ const CodeChecker = () => {
     setName("");
     setPhone("");
     setCode("");
+    setOutletName("");
   };
 
   const getPrizeStyle = () => {
-    switch (result) {
-      case "Enat":
+    switch (result.toLowerCase()) {
+      case "enat":
         return {
           color: "#0f5132",
           icon: <StarsIcon fontSize="large" color="success" />,
         };
-      case "Ferrovit":
+      case "ferrovit":
         return {
           color: "#664d03",
           icon: <FlashOnIcon fontSize="large" color="warning" />,
         };
       default:
-        return {};
+        return {
+          color: "#1f2937",
+          icon: <StarsIcon fontSize="large" />,
+        };
     }
   };
 
@@ -210,6 +158,7 @@ const CodeChecker = () => {
               disabled={isLoading}
               variant="outlined"
             />
+
             <Typography fontSize={"1.1rem"}>ဖုန်းနံပါတ်</Typography>
             <TextField
               label="ကာစတန်မာ၏ ဖုန်းနံပါတ်ဖြည့်သွင်းပါ"
@@ -221,15 +170,27 @@ const CodeChecker = () => {
               helperText={phoneError}
               variant="outlined"
             />
+
+            <Typography fontSize={"1.1rem"}>ဆိုင်အမည်</Typography>
+            <TextField
+              label="ဆိုင်အမည် ဖြည့်သွင်းပါ"
+              value={outletName}
+              onChange={(e) => setOutletName(e.target.value)}
+              fullWidth
+              disabled={isLoading}
+              variant="outlined"
+            />
+
             <Typography fontSize={"1.1rem"}>လျို့ဝှက်ကုဒ်</Typography>
             <TextField
-              label="ကာစတန်မာ ၏ လျှို့၀ှက်ကုဒ်ကို ဖြည့်သွင်းပါ"
+              label="လျှို့ဝှက်ကုဒ် ဖြည့်သွင်းပါ"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               fullWidth
               disabled={isLoading}
               variant="outlined"
             />
+
             {error && <Alert severity="error">{error}</Alert>}
           </Box>
         </Paper>

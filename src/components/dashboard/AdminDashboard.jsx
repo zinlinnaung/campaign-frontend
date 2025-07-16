@@ -22,12 +22,11 @@ import TuneIcon from "@mui/icons-material/Tune";
 import * as XLSX from "xlsx";
 import axios from "axios";
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ prizeNameFilter }) => {
   const [filters, setFilters] = useState({
     outletName: "",
     phone: "",
     code: "",
-    prizeName: "",
     startDate: "",
     endDate: "",
   });
@@ -53,23 +52,11 @@ const AdminDashboard = () => {
         createdAt: new Date(r.createdAt).toLocaleString(),
       }));
       setRecords(transformed);
-      setFilteredRecords(transformed);
     } catch (err) {
       console.error("Failed to fetch records:", err);
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchRecords();
-  }, []);
-
-  const handleChange = (field) => (event) => {
-    setFilters((prev) => ({
-      ...prev,
-      [field]: event.target.value,
-    }));
   };
 
   const fetchFilteredData = () => {
@@ -83,9 +70,6 @@ const AdminDashboard = () => {
       const matchesCode = record.code
         .toLowerCase()
         .includes(filters.code.toLowerCase());
-      const matchesPrizeName = record.prizeName
-        .toLowerCase()
-        .includes(filters.prizeName.toLowerCase());
 
       const createdAt = new Date(record.createdAt);
       const start = filters.startDate ? new Date(filters.startDate) : null;
@@ -94,17 +78,36 @@ const AdminDashboard = () => {
       const matchesStartDate = !start || createdAt >= start;
       const matchesEndDate = !end || createdAt <= end;
 
+      const matchesPrize =
+        !prizeNameFilter ||
+        record.prizeName?.toLowerCase() === prizeNameFilter.toLowerCase();
+
       return (
         matchesOutlet &&
         matchesPhone &&
         matchesCode &&
-        matchesPrizeName &&
         matchesStartDate &&
-        matchesEndDate
+        matchesEndDate &&
+        matchesPrize
       );
     });
 
     setFilteredRecords(filtered);
+  };
+
+  useEffect(() => {
+    fetchRecords();
+  }, []);
+
+  useEffect(() => {
+    fetchFilteredData();
+  }, [records, filters, prizeNameFilter]);
+
+  const handleChange = (field) => (event) => {
+    setFilters((prev) => ({
+      ...prev,
+      [field]: event.target.value,
+    }));
   };
 
   const handleExcelExport = () => {
@@ -139,7 +142,6 @@ const AdminDashboard = () => {
     { field: "phone", headerName: "Phone", flex: 1 },
     { field: "outletName", headerName: "Outlet", flex: 1 },
     { field: "code", headerName: "Prize Code", flex: 1 },
-    { field: "prizeName", headerName: "Prize Name", flex: 1 },
     { field: "createdAt", headerName: "Created At", flex: 1 },
   ];
 
@@ -167,14 +169,18 @@ const AdminDashboard = () => {
               </Tooltip>
             }
             titleTypographyProps={{ fontWeight: 600, fontSize: "1rem" }}
-            title="Filter Prize Records"
+            title={
+              prizeNameFilter
+                ? `Filter "${prizeNameFilter}" Prize Records`
+                : "Filter All Prize Records"
+            }
             subheader="Search by outlet, phone or prize code"
             subheaderTypographyProps={{ fontSize: "0.85rem" }}
           />
           <Divider />
           <CardContent sx={{ pt: 2, pb: 1 }}>
             <Grid container spacing={1.5}>
-              {["outletName", "phone", "code"].map((field, i) => (
+              {["outletName", "phone", "code"].map((field) => (
                 <Grid item xs={12} md={2.4} key={field}>
                   <TextField
                     size="small"
@@ -200,26 +206,6 @@ const AdminDashboard = () => {
                   />
                 </Grid>
               ))}
-
-              <Grid item xs={12} md={2.4}>
-                <TextField
-                  size="small"
-                  label="Prize Name"
-                  variant="outlined"
-                  fullWidth
-                  value={filters.prizeName}
-                  onChange={handleChange("prizeName")}
-                  sx={textFieldStyle}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-
               <Grid item xs={12} md={2.4}>
                 <TextField
                   size="small"
@@ -281,7 +267,7 @@ const AdminDashboard = () => {
             fontSize="1rem"
             color="#0072ff"
           >
-            Submitted Records
+            Submitted Records {prizeNameFilter && `(Only ${prizeNameFilter})`}
           </Typography>
 
           <Box display="flex" justifyContent="flex-end" mb={1}>

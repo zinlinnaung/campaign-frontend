@@ -14,6 +14,8 @@ import {
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import MenuIcon from "@mui/icons-material/Menu";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 import { Link, useLocation } from "react-router-dom";
 
 export const drawerWidth = 240;
@@ -31,12 +33,19 @@ const Sidebar = () => {
 
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
-    { text: "upload", icon: <DashboardIcon />, path: "/dashboard/upload" },
+    { text: "Upload", icon: <UploadFileIcon />, path: "/dashboard/upload" },
+
+    { text: "Enat", icon: <BubbleChartIcon />, path: "/dashboard/enat" },
     {
-      text: "Account Settings",
-      icon: <SettingsIcon />,
-      path: "/dashboard/settings",
+      text: "Farrovit",
+      icon: <BubbleChartIcon />,
+      path: "/dashboard/farrovit",
     },
+    // {
+    //   text: "Account Settings",
+    //   icon: <SettingsIcon />,
+    //   path: "/dashboard/settings",
+    // },
   ];
 
   const handleDrawerToggle = () => setOpen(!open);
