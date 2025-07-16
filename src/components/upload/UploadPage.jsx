@@ -132,7 +132,7 @@ const ExcelUploadPage = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:5051/api/customer-records/upload-excel",
+        "https://megawecare.tharapa.ai/api/customer-records/upload-excel",
         {
           method: "POST",
           headers: {

@@ -40,7 +40,9 @@ const AdminDashboard = () => {
   const fetchRecords = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5051/api/customer-records");
+      const res = await axios.get(
+        "https://megawecare.tharapa.ai/api/customer-records"
+      );
       const transformed = res.data.map((r) => ({
         id: r.id,
         name: r.name,
