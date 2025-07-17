@@ -37,9 +37,9 @@ const Sidebar = () => {
 
     { text: "Enat", icon: <BubbleChartIcon />, path: "/dashboard/enat" },
     {
-      text: "Farrovit",
+      text: "Ferrovit",
       icon: <BubbleChartIcon />,
-      path: "/dashboard/farrovit",
+      path: "/dashboard/ferrovit",
     },
     // {
     //   text: "Account Settings",

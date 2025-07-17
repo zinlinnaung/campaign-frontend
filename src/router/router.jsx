@@ -24,7 +24,7 @@ export const RouterComponent = () => {
         <Route path="settings" element={<SettingsPage />} />{" "}
         <Route path="upload" element={<ExcelUploadPage />} />{" "}
         <Route path="enat" element={<EnatDashboard />} />
-        <Route path="farrovit" element={<FerrovitDashboard />} />
+        <Route path="ferrovit" element={<FerrovitDashboard />} />
         {/* Upload Page */}
         {/* Add more routes here */}
       </Route>
