@@ -30,6 +30,7 @@ const CodeChecker = () => {
   const [phoneError, setPhoneError] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   const [width, height] = useWindowSize();
+  const [township, setTownship] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,6 +54,7 @@ const CodeChecker = () => {
           phone,
           code,
           outletName,
+          township,
         }
       );
 
@@ -76,6 +78,7 @@ const CodeChecker = () => {
     setPhone("");
     setCode("");
     setOutletName("");
+    setTownship("");
   };
 
   const getPrizeStyle = () => {
@@ -176,6 +179,16 @@ const CodeChecker = () => {
               label="ဆိုင်အမည် ဖြည့်သွင်းပါ"
               value={outletName}
               onChange={(e) => setOutletName(e.target.value)}
+              fullWidth
+              disabled={isLoading}
+              variant="outlined"
+            />
+
+            <Typography fontSize={"1.1rem"}>မြို့နယ်</Typography>
+            <TextField
+              label="မြို့နယ် ဖြည့်သွင်းပါ"
+              value={township}
+              onChange={(e) => setTownship(e.target.value)}
               fullWidth
               disabled={isLoading}
               variant="outlined"

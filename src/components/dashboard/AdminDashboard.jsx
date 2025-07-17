@@ -26,6 +26,7 @@ const AdminDashboard = ({ prizeNameFilter }) => {
   const [filters, setFilters] = useState({
     outletName: "",
     phone: "",
+    township: "", // ✅ Add this
     code: "",
     startDate: "",
     endDate: "",
@@ -47,6 +48,7 @@ const AdminDashboard = ({ prizeNameFilter }) => {
         name: r.name,
         phone: r.phone,
         outletName: r.outletName,
+        township: r.township,
         code: r.code.code,
         prizeName: r.code.prizeName,
         createdAt: new Date(r.createdAt).toLocaleString(),
@@ -71,6 +73,10 @@ const AdminDashboard = ({ prizeNameFilter }) => {
         .toLowerCase()
         .includes(filters.code.toLowerCase());
 
+      const matchesTownship = record.township
+        ?.toLowerCase()
+        .includes(filters.township.toLowerCase());
+
       const createdAt = new Date(record.createdAt);
       const start = filters.startDate ? new Date(filters.startDate) : null;
       const end = filters.endDate ? new Date(filters.endDate) : null;
@@ -85,6 +91,7 @@ const AdminDashboard = ({ prizeNameFilter }) => {
       return (
         matchesOutlet &&
         matchesPhone &&
+        matchesTownship &&
         matchesCode &&
         matchesStartDate &&
         matchesEndDate &&
@@ -141,6 +148,7 @@ const AdminDashboard = ({ prizeNameFilter }) => {
     { field: "name", headerName: "Customer Name", flex: 1 },
     { field: "phone", headerName: "Phone", flex: 1 },
     { field: "outletName", headerName: "Outlet", flex: 1 },
+    { field: "township", headerName: "Township", flex: 1 },
     { field: "code", headerName: "Prize Code", flex: 1 },
     { field: "createdAt", headerName: "Created At", flex: 1 },
   ];
@@ -180,7 +188,7 @@ const AdminDashboard = ({ prizeNameFilter }) => {
           <Divider />
           <CardContent sx={{ pt: 2, pb: 1 }}>
             <Grid container spacing={1.5}>
-              {["outletName", "phone", "code"].map((field) => (
+              {["outletName", "phone", "code", "township"].map((field) => (
                 <Grid item xs={12} md={2.4} key={field}>
                   <TextField
                     size="small"
@@ -189,7 +197,9 @@ const AdminDashboard = ({ prizeNameFilter }) => {
                         ? "Prize Code"
                         : field === "phone"
                         ? "Phone Number"
-                        : "Outlet Name"
+                        : field === "outletName"
+                        ? "Outlet Name"
+                        : "Township"
                     }
                     variant="outlined"
                     fullWidth
