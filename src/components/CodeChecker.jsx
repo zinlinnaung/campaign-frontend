@@ -63,9 +63,21 @@ const CodeChecker = () => {
       setShowDialog(true);
     } catch (err) {
       if (err.response && err.response.status === 409) {
-        setError("လူကြီးမင်း ၏ ကုဒ် သည် အသုံးပြုပြီးသား ဖြစ်နေပါသည်");
+        const msg = err.response.data?.message;
+
+        if (msg === "Code has already been used") {
+          setError("လူကြီးမင်း ၏ ကုဒ် သည် အသုံးပြုပြီးသား ဖြစ်နေပါသည်။");
+        } else if (msg === "Phone number already exists") {
+          setError("ဖုန်းနံပါတ်သည် စနစ်တွင် ရှိပြီးဖြစ်ပါသည်။");
+        } else {
+          setError("တောင်းဆိုမှုတွင် ပြဿနာတစ်ခုရှိနေပါသည်။");
+        }
+      } else if (err.response && err.response.status === 404) {
+        setError("လူကြီးမင်း ထည့်သွင်းသော ကုဒ်သည် မမှန်ကန်ပါ။");
       } else {
-        setError("စနစ်အမှားရှိနေပါသည်။ ကျေးဇူးပြုပြီးနောက်တစ်ကြိမ်ပြန်စမ်းပါ။");
+        setError(
+          "စနစ်အမှားရှိနေပါသည်။ ကျေးဇူးပြု၍ နောက်တစ်ကြိမ် ပြန်စမ်းကြည့်ပါ။"
+        );
       }
     } finally {
       setIsLoading(false);
