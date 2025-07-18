@@ -55,7 +55,7 @@ const LoginPage = () => {
         sx={{
           minHeight: "90vh",
           backgroundColor: "#ffffff",
-          backgroundImage: "url('text.png')",
+          // backgroundImage: "url('text.png')",
           backgroundRepeat: "no-repeat",
           backgroundSize: "contain",
           backgroundPosition: "center",

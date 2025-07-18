@@ -9,6 +9,7 @@ import LoginPage from "../pages/LoginPage";
 import ExcelUploadPage from "../components/upload/UploadPage";
 import EnatDashboard from "../components/Enat/EnatDashboard";
 import FerrovitDashboard from "../components/Ferrovit/FerrovitDashboard";
+import GlucomealDashboard from "../components/Glucomeal/GlucomealDashboard";
 
 export const RouterComponent = () => {
   return (
@@ -24,12 +25,13 @@ export const RouterComponent = () => {
         <Route path="settings" element={<SettingsPage />} />{" "}
         <Route path="upload" element={<ExcelUploadPage />} />{" "}
         <Route path="enat" element={<EnatDashboard />} />
+        <Route path="glucomeal" element={<GlucomealDashboard />} />
         <Route path="ferrovit" element={<FerrovitDashboard />} />
         {/* Upload Page */}
         {/* Add more routes here */}
       </Route>
 
-      <Route path="/code" element={<Home />} />
+      <Route path="/glucomeal" element={<Home />} />
       <Route path="/qr" element={<QrCodeGenerator />} />
       <Route path="/login" element={<LoginPage />} />
     </Routes>

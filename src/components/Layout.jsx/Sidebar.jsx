@@ -37,6 +37,11 @@ const Sidebar = () => {
 
     { text: "Enat", icon: <BubbleChartIcon />, path: "/dashboard/enat" },
     {
+      text: "Glucomeal",
+      icon: <BubbleChartIcon />,
+      path: "/dashboard/glucomeal",
+    },
+    {
       text: "Ferrovit",
       icon: <BubbleChartIcon />,
       path: "/dashboard/ferrovit",

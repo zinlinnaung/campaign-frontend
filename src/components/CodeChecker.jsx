@@ -121,7 +121,7 @@ const CodeChecker = () => {
         sx={{
           minHeight: "90vh",
           backgroundColor: "#ffffff",
-          backgroundImage: "url('text.png')",
+          // backgroundImage: "url('text.png')",
           backgroundRepeat: "no-repeat",
           backgroundSize: "contain",
           backgroundPosition: "center",
@@ -133,10 +133,10 @@ const CodeChecker = () => {
       >
         <Box
           component="img"
-          src="logo.png"
+          src="wecare.png"
           alt="Mega Logo"
           sx={{
-            width: { xs: "45%", sm: "140px", md: "10%", lg: "11%" },
+            width: { xs: "30%", sm: "140px", md: "8%", lg: "8%" },
             mt: 2,
             mb: 3,
           }}
@@ -174,7 +174,9 @@ const CodeChecker = () => {
               variant="outlined"
             />
 
-            <Typography fontSize={"1.1rem"}>ဖုန်းနံပါတ်</Typography>
+            <Typography fontSize={"1.1rem"}>
+              ဖုန်းနံပါတ် ( viber နံပါတ် )
+            </Typography>
             <TextField
               label="ကာစတန်မာ၏ ဖုန်းနံပါတ်ဖြည့်သွင်းပါ"
               value={phone}
