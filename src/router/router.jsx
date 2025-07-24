@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom"; // Added Navigate
+import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../components/Layout.jsx/Layout";
 import DashboardPage from "../pages/DashboardPage";
 import SettingsPage from "../pages/SettingPage";
@@ -10,27 +10,31 @@ import ExcelUploadPage from "../components/upload/UploadPage";
 import EnatDashboard from "../components/Enat/EnatDashboard";
 import FerrovitDashboard from "../components/Ferrovit/FerrovitDashboard";
 import GlucomealDashboard from "../components/Glucomeal/GlucomealDashboard";
+import PrivateRoute from "../components/PrivateRoute";
 
 export const RouterComponent = () => {
   return (
     <Routes>
-      {/* Redirect default path "/" to "/code" */}
-      <Route path="/" element={<Navigate to="/code" replace />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
-      {/* Wrap all dashboard routes in Layout */}
-      <Route path="/dashboard" element={<Layout />}>
+      {/* PRIVATE ROUTES */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <Layout />
+          </PrivateRoute>
+        }
+      >
         <Route index element={<DashboardPage />} />
         <Route path="settings" element={<SettingsPage />} />
-        <Route index element={<DashboardPage />} /> {/* Admin Dashboard */}
-        <Route path="settings" element={<SettingsPage />} />{" "}
-        <Route path="upload" element={<ExcelUploadPage />} />{" "}
+        <Route path="upload" element={<ExcelUploadPage />} />
         <Route path="enat" element={<EnatDashboard />} />
         <Route path="glucomeal" element={<GlucomealDashboard />} />
         <Route path="ferrovit" element={<FerrovitDashboard />} />
-        {/* Upload Page */}
-        {/* Add more routes here */}
       </Route>
 
+      {/* PUBLIC ROUTES */}
       <Route path="/glucomeal" element={<Home />} />
       <Route path="/qr" element={<QrCodeGenerator />} />
       <Route path="/login" element={<LoginPage />} />

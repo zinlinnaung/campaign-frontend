@@ -16,7 +16,9 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import MenuIcon from "@mui/icons-material/Menu";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { Link, useLocation } from "react-router-dom";
+import { logout } from "../utils/auth";
 
 export const drawerWidth = 240;
 
@@ -34,17 +36,11 @@ const Sidebar = () => {
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
     { text: "Upload", icon: <UploadFileIcon />, path: "/dashboard/upload" },
-
     { text: "Enat", icon: <BubbleChartIcon />, path: "/dashboard/enat" },
     {
       text: "Glucomeal",
       icon: <BubbleChartIcon />,
       path: "/dashboard/glucomeal",
-    },
-    {
-      text: "Ferrovit",
-      icon: <BubbleChartIcon />,
-      path: "/dashboard/ferrovit",
     },
     // {
     //   text: "Account Settings",
@@ -56,54 +52,84 @@ const Sidebar = () => {
   const handleDrawerToggle = () => setOpen(!open);
 
   const drawerContent = (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      {/* Logo / Title */}
-      <Box
-        sx={{
-          p: 2,
-          // bgcolor: headerBg,
-          textAlign: "center",
-          borderBottom: "1px solid #2d3748",
-        }}
-      >
-        <Typography variant="h6" fontWeight="bold" color={textColor}>
-          My Admin
-        </Typography>
+    <Box
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      {/* Top Section: Logo + Navigation */}
+      <Box>
+        <Box
+          sx={{
+            p: 2,
+            textAlign: "center",
+            borderBottom: "1px solid #2d3748",
+          }}
+        >
+          <Typography variant="h6" fontWeight="bold" color={textColor}>
+            My Admin
+          </Typography>
+        </Box>
+
+        <List sx={{ mt: 2 }}>
+          {menuItems.map(({ text, icon, path }) => (
+            <ListItem
+              button
+              key={text}
+              component={Link}
+              to={path}
+              selected={location.pathname === path}
+              onClick={isMobile ? handleDrawerToggle : undefined}
+              sx={{
+                "&.Mui-selected": {
+                  backgroundColor: selectedColor,
+                  "& .MuiListItemText-primary": {
+                    fontWeight: "bold",
+                  },
+                  "& .MuiListItemIcon-root": {
+                    color: "#fff",
+                  },
+                },
+                "&:hover": {
+                  backgroundColor: hoverColor,
+                },
+                "& .MuiListItemText-root": {
+                  color: textColor,
+                },
+              }}
+            >
+              <ListItemIcon sx={{ color: textColor }}>{icon}</ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItem>
+          ))}
+        </List>
       </Box>
 
-      {/* Menu List */}
-      <List sx={{ mt: 2 }}>
-        {menuItems.map(({ text, icon, path }) => (
+      {/* Bottom Section: Logout */}
+      <Box>
+        <List>
           <ListItem
             button
-            key={text}
-            component={Link}
-            to={path}
-            selected={location.pathname === path}
-            onClick={isMobile ? handleDrawerToggle : undefined}
+            onClick={logout}
             sx={{
-              "&.Mui-selected": {
-                backgroundColor: selectedColor,
-                "& .MuiListItemText-primary": {
-                  fontWeight: "bold",
-                },
-                "& .MuiListItemIcon-root": {
-                  color: "#fff",
-                },
-              },
               "&:hover": {
-                backgroundColor: hoverColor,
+                backgroundColor: "#dc2626",
               },
               "& .MuiListItemText-root": {
                 color: textColor,
               },
             }}
           >
-            <ListItemIcon sx={{ color: textColor }}>{icon}</ListItemIcon>
-            <ListItemText primary={text} />
+            <ListItemIcon sx={{ color: textColor }}>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
           </ListItem>
-        ))}
-      </List>
+        </List>
+      </Box>
     </Box>
   );
 

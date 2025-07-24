@@ -18,6 +18,7 @@ import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import Confetti from "react-confetti";
 import { useWindowSize } from "@react-hook/window-size";
 import { useNavigate } from "react-router-dom"; // 👈 Required for routing
+import axios from "axios";
 
 const LoginPage = () => {
   const [phone, setPhone] = useState("");
@@ -28,25 +29,43 @@ const LoginPage = () => {
   const [width, height] = useWindowSize();
   const navigate = useNavigate(); // 👈 Hook for navigation
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
     setShowDialog(false);
 
     const phoneRegex = /^09\d{6,9}$/;
-
-    setTimeout(() => {
-      if (!phoneRegex.test(phone)) {
-        setError("ဖုန်းနံပါတ်သည် 09 ဖြင့်စတင်ရပါမည်။");
-      } else if (phone === "095192868" && password === "admin123") {
-        navigate("/dashboard"); // 👈 Redirect on success
-      } else {
-        setError("ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက် မှားနေပါသည်။");
-      }
-
+    if (!phoneRegex.test(phone)) {
+      setError("ဖုန်းနံပါတ်သည် 09 ဖြင့်စတင်ရပါမည်။");
       setIsLoading(false);
-    }, 1000);
+      return;
+    }
+
+    // try {
+    const response = await axios.post(
+      "https://megawecare.tharapa.ai/api/authentication/i/login",
+      {
+        phone,
+        password,
+      }
+    );
+
+    const { access_token, refresh_token } = response.data;
+
+    localStorage.setItem("access_token", access_token);
+    localStorage.setItem("refresh_token", refresh_token);
+
+    navigate("/dashboard"); // Redirect to dashboard
+    // } catch (err) {
+    //   if (err.response && err.response.status === 401) {
+    //     setError("ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက် မှားနေပါသည်။");
+    //   } else {
+    //     setError("Server ပြဿနာရှိနေပါသည်။ နောက်မှပြန်ကြိုးစားပါ။");
+    //   }
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   return (
