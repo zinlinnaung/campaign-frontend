@@ -12,6 +12,7 @@ import {
   DialogActions,
   Stack,
   Paper,
+  MenuItem,
 } from "@mui/material";
 import StarsIcon from "@mui/icons-material/Stars";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
@@ -23,14 +24,16 @@ const CodeChecker = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
-  const [outletName, setOutletName] = useState(""); // New
+  const [outletName, setOutletName] = useState("");
+  const [township, setTownship] = useState("");
+  const [answer, setAnswer] = useState(""); // 👈 dropdown state
+
   const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   const [width, height] = useWindowSize();
-  const [township, setTownship] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,6 +58,7 @@ const CodeChecker = () => {
           code,
           outletName,
           township,
+          answer, // 👈 include dropdown value in request
         }
       );
 
@@ -64,7 +68,6 @@ const CodeChecker = () => {
     } catch (err) {
       if (err.response && err.response.status === 409) {
         const msg = err.response.data?.message;
-
         if (msg === "Code has already been used") {
           setError("လူကြီးမင်း ၏ ကုဒ် သည် အသုံးပြုပြီးသား ဖြစ်နေပါသည်။");
         } else if (msg === "Phone number already exists") {
@@ -91,6 +94,7 @@ const CodeChecker = () => {
     setCode("");
     setOutletName("");
     setTownship("");
+    setAnswer("");
   };
 
   const getPrizeStyle = () => {
@@ -121,10 +125,6 @@ const CodeChecker = () => {
         sx={{
           minHeight: "90vh",
           backgroundColor: "#ffffff",
-          // backgroundImage: "url('text.png')",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "contain",
-          backgroundPosition: "center",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -208,6 +208,25 @@ const CodeChecker = () => {
               variant="outlined"
             />
 
+            <Typography fontSize={"1.1rem"}>
+              Glucomealကို ဘယ်သူ့အတွက်ဝယ်တာလဲ
+            </Typography>
+            <TextField
+              select
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              fullWidth
+              disabled={isLoading}
+              variant="outlined"
+            >
+              <MenuItem value="မိမိကိုယ်တိုင်အတွက်">
+                မိမိကိုယ်တိုင်အတွက်
+              </MenuItem>
+              <MenuItem value="မိသားစု/မိတ်ဆွေအတွက်">
+                မိသားစု/မိတ်ဆွေအတွက်
+              </MenuItem>
+            </TextField>
+
             <Typography fontSize={"1.1rem"}>လျို့ဝှက်ကုဒ်</Typography>
             <TextField
               label="လျှို့ဝှက်ကုဒ် ဖြည့်သွင်းပါ"
@@ -283,8 +302,6 @@ const CodeChecker = () => {
           </DialogTitle>
           <DialogContent>
             <Stack spacing={2} alignItems="center">
-              {/* {icon} */}
-              {/* <Typography textAlign="center">ဂုဏ်ယူပါတယ်</Typography> */}
               <Typography textAlign="center">
                 Glucomeal ကိုဝယ်ယူအားပေးမှုအတွက် အထူးကျေးဇူးတင်ပါတယ်။
                 ကျေးဇူးတုံ့ပြန်သော အနေဖြင့် ဖုန်းဘေ ၅၀၀၀ ကို ယခု
@@ -293,9 +310,6 @@ const CodeChecker = () => {
                 သတင်းကောင်းပါးလိုက်ပါတယ်။ အကူအညီရယူဖို့ လိုအပ်ပါက 09789416147
                 ကို 9AM-5PMအတွင်း ဆက်သွယ်နိုင်ပါတယ်။
               </Typography>
-              {/* <Typography textAlign="center">
-                {result} ဒစ်စကောင့်ရရှိပါတယ်
-              </Typography> */}
             </Stack>
           </DialogContent>
           <DialogActions sx={{ justifyContent: "center" }}>
