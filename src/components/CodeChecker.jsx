@@ -35,6 +35,16 @@ const CodeChecker = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [width, height] = useWindowSize();
 
+  // Generate random requestID in format "mega_xxxxxxxx"
+  const generateRequestID = () => {
+    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let randomStr = "";
+    for (let i = 0; i < 8; i++) {
+      randomStr += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return `mega_${randomStr}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -50,6 +60,7 @@ const CodeChecker = () => {
     }
 
     try {
+      // First API call
       const res = await axios.post(
         "https://megawecare.tharapa.ai/api/customer-records",
         {
@@ -58,13 +69,34 @@ const CodeChecker = () => {
           code,
           outletName,
           township,
-          answer, // 👈 include dropdown value in request
+          answer,
         }
       );
 
       const prizeName = res.data?.prizeName || "Prize";
       setResult(prizeName);
       setShowDialog(true);
+
+      // Second API call to /api/ott/send
+      const requestID = generateRequestID();
+
+      await axios.post("https://megawecare.tharapa.ai/api/ott/send", {
+        from: "We Care For You",
+        type: 1,
+        serviceType: 2,
+        messages: [
+          {
+            to: phone, // use phone from input
+            requestID,
+            scheduled: "",
+            templateId: "1_2",
+            templateData: {
+              txt: "Glucomeal ကိုဝယ်ယူအားပေးမှုအတွက် အထူးကျေးဇူးတင်ပါတယ်။ ကျေးဇူးတုံ့ပြန်သော အနေဖြင့် ဖုန်းဘေ ၅၀၀၀ ကို ယခု စာရင်းပေးသွင်းခဲ့သော ဖုန်းနံပါတ်သို့ ၂၄ နာရီအတွင်း ဖြည့်သွင်းပေးသွားမည်ဖြစ်ပါကြောင်းကို သတင်းကောင်းပါးလိုက်ပါတယ်။ အကူအညီရယူဖို့ လိုအပ်ပါက 09789416147 ကို 9AM-5PMအတွင်း ဆက်သွယ်နိုင်ပါတယ်။",
+            },
+            useUnicode: 0,
+          },
+        ],
+      });
     } catch (err) {
       if (err.response && err.response.status === 409) {
         const msg = err.response.data?.message;
