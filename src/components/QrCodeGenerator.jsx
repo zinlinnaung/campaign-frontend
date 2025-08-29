@@ -155,7 +155,7 @@ export default function QrCodeGenerator() {
         ctx.drawImage(qrImage, borderSize, borderSize);
 
         // Add copyright text
-        const copyrightText = "© tharapa.ai";
+        const copyrightText = "© ZinLinnAung";
         ctx.font = "16px Arial";
         ctx.fillStyle = "#808080"; // Gray text
         const textWidth = ctx.measureText(copyrightText).width;

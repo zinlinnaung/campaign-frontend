@@ -15,25 +15,11 @@ export const RouterComponent = () => {
   return (
     <Routes>
       {/* Redirect default path "/" to "/code" */}
-      <Route path="/" element={<Navigate to="/code" replace />} />
+      <Route path="/" element={<Navigate to="/qr" replace />} />
 
       {/* Wrap all dashboard routes in Layout */}
-      <Route path="/dashboard" element={<Layout />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="settings" element={<SettingsPage />} />
-        <Route index element={<DashboardPage />} /> {/* Admin Dashboard */}
-        <Route path="settings" element={<SettingsPage />} />{" "}
-        <Route path="upload" element={<ExcelUploadPage />} />{" "}
-        <Route path="enat" element={<EnatDashboard />} />
-        <Route path="glucomeal" element={<GlucomealDashboard />} />
-        <Route path="ferrovit" element={<FerrovitDashboard />} />
-        {/* Upload Page */}
-        {/* Add more routes here */}
-      </Route>
 
-      <Route path="/glucomeal" element={<Home />} />
       <Route path="/qr" element={<QrCodeGenerator />} />
-      <Route path="/login" element={<LoginPage />} />
     </Routes>
   );
 };
