@@ -240,7 +240,7 @@ const CodeChecker = () => {
               variant="outlined"
             />
 
-            <Typography fontSize={"1.1rem"}>
+            {/* <Typography fontSize={"1.1rem"}>
               Glucomealကို ဘယ်သူ့အတွက်ဝယ်တာလဲ
             </Typography>
             <TextField
@@ -257,7 +257,7 @@ const CodeChecker = () => {
               <MenuItem value="မိသားစု/မိတ်ဆွေအတွက်">
                 မိသားစု/မိတ်ဆွေအတွက်
               </MenuItem>
-            </TextField>
+            </TextField> */}
 
             <Typography fontSize={"1.1rem"}>လျို့ဝှက်ကုဒ်</Typography>
             <TextField
